@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <windows.h>  // usar gotoxy
 #include <locale.h>
 
 #define InicioArranjo 1
@@ -196,3 +197,4 @@ int main() {
 
     return 0;
 }
+
