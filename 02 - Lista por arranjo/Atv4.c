@@ -25,7 +25,7 @@ void FLVazia(TipoLista *Lista)
     Lista->Ultimo = Lista->Primeiro;
 }
 
-int Vazia(TipoLista Lista)
+int Vazia(TipoLista *Lista)
 {
     return (Lista->Primeiro == Lista->Ultimo);
 }
@@ -86,7 +86,7 @@ int main()
 
     printf("\n--- Processamento dos Dados ---\n");
 
-    if (Vazia(listaDeNotas))
+    if (Vazia(&listaDeNotas))
     {
         printf("Nenhum valor foi lido.\n");
         printf("\n8. Programa encerrado.\n");

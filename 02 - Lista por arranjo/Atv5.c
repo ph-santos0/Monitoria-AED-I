@@ -22,7 +22,7 @@ void FLVazia(TipoLista *Lista) {
     Lista->Ultimo = Lista->Primeiro;
 }
 
-int Vazia(TipoLista Lista) {
+int Vazia(TipoLista *Lista) {
     return (Lista->Primeiro == Lista->Ultimo);
 }
 
