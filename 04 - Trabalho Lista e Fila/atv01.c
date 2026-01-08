@@ -3,13 +3,13 @@
 
 #define MaxTam 3
 
-struct
+typedef struct
 {
     int modelo;
     float consumo;
 } TipoItem;
 
-struct
+typedef struct
 {
     TipoItem Item[MaxTam];
     int Ultimo;
