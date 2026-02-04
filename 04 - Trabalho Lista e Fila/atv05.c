@@ -1,59 +1,88 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define MaxTam 10
-#define InicioArranjo 1
+// 5.Escreva um algoritmo que forneça o maior, o menor e a média aritmética dos itens inteiro de uma lista.
 
+#define MAXTAM 10
 typedef struct
 {
-    int valor;
-} TipoItem;
-
-typedef struct
-{
-    TipoItem Item[MaxTam];
-    int Primeiro, Ultimo;
+    int num[MAXTAM];
+    int qtd;
 } TipoLista;
 
-void AlgoritmoEstatistica(TipoLista Lista, int *maior, int *menor, float *media)
+void FFvazia(TipoLista *L)
 {
-    int i, soma = 0;
-    if (Lista.Primeiro == Lista.Ultimo)
-        return;
+    L->qtd = 0; 
+} 
 
-    *maior = Lista.Item[0].valor;
-    *menor = Lista.Item[0].valor;
+void inserirvalores(TipoLista *L)
+{
+    int num = 0;
 
-    for (i = 0; i < Lista.Ultimo - 1; i++)
+
+    printf("Digite os valores (caso queira encerrar digite -1)");
+    scanf("%d", &num);
+    while (num != -1 && L->qtd < MAXTAM) 
     {
-        int v = Lista.Item[i].valor;
-        soma += v;
-        if (v > *maior)
-            *maior = v;
-        if (v < *menor)
-            *menor = v;
-    }
+        L->num[L->qtd] = num; 
+        L->qtd++;
 
-    *media = (float)soma / (Lista.Ultimo - 1);
+        printf("Digite as notas: (caso queira encerrar digite -1)");
+        scanf("%d", &num);
+    }
 }
 
+void maioremenor(TipoLista *L)
+{
+    if (L->qtd == 0)
+    {
+        printf("\nLista vazia!");
+        return;
+    }
+
+    int maior = L->num[0];       
+    int menor = L->num[0];       
+    for (int i = 1; i < L->qtd; i++) 
+    {
+        if (maior < L->num[i])
+        {
+            maior = L->num[i];
+        }
+        if (menor > L->num[i])
+        {
+            menor = L->num[i];
+        }
+    }
+    printf("\nMaior: %d", maior);
+    printf("\nMenor: %d", menor);
+}
+float calcularmedia(TipoLista *L)
+{
+    int soma = 0;
+    float media = 0;
+
+    if (L->qtd == 0) // conferir lista vazia antes de fzr a media
+    {
+        printf("\nLista vazia!");
+        return 0;
+    }else
+    {
+        for (int i = 0; i < L->qtd; i++)
+        {
+            soma = soma + L->num[i];
+        }
+        media = (float) soma / L->qtd;// Convertemos soma para float antes de dividir
+        return media;
+    }
+    
+}
 int main()
 {
     TipoLista lista;
-    lista.Primeiro = 1;
-    lista.Ultimo = 1;
+    FFvazia(&lista);
+    inserirvalores(&lista);
+    maioremenor(&lista);
+    printf("\nmedia:%f",calcularmedia(&lista));
 
-    lista.Item[0].valor = 10;
-    lista.Ultimo++;
-    lista.Item[1].valor = 5;
-    lista.Ultimo++;
-    lista.Item[2].valor = 8;
-    lista.Ultimo++;
-
-    int max, min;
-    float med;
-
-    AlgoritmoEstatistica(lista, &max, &min, &med);
-    printf("Maior: %d, Menor: %d, Media: %.2f\n", max, min, med);
     return 0;
 }

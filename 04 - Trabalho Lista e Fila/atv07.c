@@ -1,69 +1,133 @@
 #include <stdio.h>
-#include <stdlib.h>
 
+#define MAX_TOTAL 32 // limite máximo do vetor
+
+// Estrutura da fila
 typedef struct
 {
-    int id;
-} TipoItem;
+    int dados[MAX_TOTAL];
+    int frente;
+    int tras;
+    int tamanho;
+    int capacidade; // capacidade atual
+} Fila;
 
-typedef struct
+// Inicializa a fila
+void iniciar(Fila *f)
 {
-    TipoItem *Item;
-    int Frente, Tras;
-    int Tamanho;
-    int Capacidade;
-} TipoFila;
-
-void Inicializa(TipoFila *Fila)
-{
-    Fila->Capacidade = 2;
-    Fila->Item = (TipoItem *)malloc(Fila->Capacidade * sizeof(TipoItem));
-    Fila->Frente = 1;
-    Fila->Tras = 1;
-    Fila->Tamanho = 0;
+    f->frente = 0;
+    f->tras = 0;
+    f->tamanho = 0;
+    f->capacidade = 4; // capacidade inicial
 }
 
-void Enfileira(TipoItem x, TipoFila *Fila)
+// Verifica se a fila está vazia
+int vazia(Fila f)
 {
-    if (Fila->Tamanho == Fila->Capacidade)
+    return f.tamanho == 0;
+}
+
+// Dobra a capacidade da fila
+void dobrarCapacidade(Fila *f)
+{
+    if (f->capacidade * 2 <= MAX_TOTAL)
     {
-        printf("Dobrando tamanho de %d para %d...\n", Fila->Capacidade, Fila->Capacidade * 2);
-        int novaCapacidade = Fila->Capacidade * 2;
-        TipoItem *novoArr = (TipoItem *)malloc(novaCapacidade * sizeof(TipoItem));
+        f->capacidade *= 2;
+        printf("\nCapacidade da fila aumentada para %d.\n", f->capacidade);
+    }
+    else
+    {
+        printf("\nCapacidade maxima atingida (%d).\n", MAX_TOTAL);
+    }
+}
 
-        int i, aux = Fila->Frente - 1;
-        for (i = 0; i < Fila->Tamanho; i++)
-        {
-            novoArr[i] = Fila->Item[aux];
-            aux = (aux + 1) % Fila->Capacidade;
-        }
-
-        free(Fila->Item);
-        Fila->Item = novoArr;
-        Fila->Capacidade = novaCapacidade;
-        Fila->Frente = 1;
-        Fila->Tras = Fila->Tamanho + 1;
+// Enfileirar
+void enfileirar(Fila *f, int valor)
+{
+    if (f->tamanho == f->capacidade)
+    {
+        dobrarCapacidade(f);
     }
 
-    Fila->Item[Fila->Tras - 1] = x;
-    Fila->Tras = (Fila->Tras % Fila->Capacidade) + 1;
-    Fila->Tamanho++;
+    if (f->tamanho == f->capacidade)
+    {
+        printf("\nErro: fila cheia!\n");
+        return;
+    }
+
+    f->dados[f->tras] = valor;
+    f->tras = (f->tras + 1) % MAX_TOTAL;
+    f->tamanho++;
+}
+
+// Mostrar fila
+void mostrar(Fila f)
+{
+    if (vazia(f))
+    {
+        printf("\nFila vazia!\n");
+        return;
+    }
+
+    printf("\nTamanho da fila: %d\nCapacidade da fila: %d\nElementos: ",
+           f.tamanho, f.capacidade);
+
+    int pos = f.frente;
+    for (int i = 0; i < f.tamanho; i++)
+    {
+        printf("%d ", f.dados[pos]);
+        pos = (pos + 1) % MAX_TOTAL;
+    }
+    printf("\n");
 }
 
 int main()
 {
-    TipoFila f;
-    TipoItem x;
-    int i;
+    Fila fila;
+    iniciar(&fila);
 
-    Inicializa(&f);
+    int opcao, valor;
 
-    for (i = 1; i <= 5; i++)
+    do
     {
-        x.id = i;
-        Enfileira(x, &f);
-        printf("Enfileirado: %d\n", i);
-    }
+        printf("\n1 - Inserir elementos");
+        printf("\n2 - Mostrar fila");
+        printf("\n3 - Ver capacidade atual");
+        printf("\n0 - Sair");
+        printf("\nEscolha: ");
+        scanf("%d", &opcao);
 
+        if (opcao == 1)
+        {
+            
+            while (fila.tamanho < MAX_TOTAL)
+            {
+                printf("\nDigite um valor ou digite -1 para sair: ");
+                scanf("%d", &valor);
+
+                if (valor == -1)
+                    break;
+
+                enfileirar(&fila, valor);
+            }
+
+            if (fila.tamanho == MAX_TOTAL)
+            {
+                printf("\nA fila atingiu o tamanho maximo absoluto!\n");
+            }
+        }
+        else if (opcao == 2)
+        {
+            mostrar(fila);
+        }
+        else if (opcao == 3)
+        {
+            printf("\nCapacidade atual: %d\nMaxima: %d\n",
+                   fila.capacidade, MAX_TOTAL);
+        }
+
+    } while (opcao != 0);
+
+    printf("\nPrograma encerrado.\n");
     return 0;
 }

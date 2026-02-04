@@ -1,235 +1,64 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <windows.h> // usar gotoxy
-#include <locale.h>
+// 3.Implemente uma lista por arranjo ordenada, mantendo os elementos sempre em ordem crescente.
 
-#define InicioArranjo 1
-#define MaxTam 5
-
-typedef int Apontador;
+#define MAXTAM 5
 
 typedef struct
 {
-    int cod;
-    int idade;
-} TipoItem;
-
-typedef struct
-{
-    TipoItem Item[MaxTam];
-    Apontador Primeiro;
-    Apontador Ultimo;
+    int num[MAXTAM]; // Aqui guarda os numeros
+    int qtd;         // pra saber quantos itens ja estão na lista
 } TipoLista;
 
-TipoLista Lista;
-TipoItem x;
-Apontador pos;
+// função para fazer a fila ficar vazia para não pegar lixo de memoria
 
-/*
-void gotoxy(int x, int y){ //Função para centralizar
-     SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE),(COORD){x-1,y-1});
-}
-*/
-
-//---------------------------------------------
-// FUNÇÕES DE LISTA
-//---------------------------------------------
-
-void FLVazia(TipoLista *Lista)
+void FFVazia(TipoLista *L)
 {
-    Lista->Primeiro = InicioArranjo;
-    Lista->Ultimo = Lista->Primeiro;
+    L->qtd = 0;
 }
 
-int Vazia(TipoLista Lista)
+int ListaOrdenada(TipoLista *L, int num)
 {
-    return (Lista.Primeiro == Lista.Ultimo);
+    if (L->qtd == MAXTAM)
+    {
+        printf("Lista cheia!");
+        return 0;
+    }
+    int pos = 0;
+    while (pos < L->qtd && num > L->num[pos]) // O "pos" é para percorrer o indice(posição) enquanto ele for menor que a quantidade de itens, e num > L->num[pos] é a comparação de valor, se num(valor) é menor que o valor na posição i soma ++, enquando a condoção for verdadeira continuara percorrendo a lista.
+    {
+        pos++;
+    }
+
+    // deslocar elementos
+
+    for (int i = L->qtd; i > pos; i--) // i começa com o valor do ultimo indice ocupado, enquanto i for maior que a posição, copia o elemento anterior pra posição atual.
+    {
+        L->num[i] = L->num[i - 1];
+    }
+    // inserir o numero
+
+    L->num[pos] = num;
+    L->qtd++;
+    return 1;
 }
-
-/* Função de Inserção Ordenada */
-void Insere(TipoItem x, TipoLista *Lista)
-{
-    if (Lista->Ultimo >= MaxTam)
-    {
-        printf("Lista cheia!\n");
-        return;
-    }
-
-    int i = Lista->Ultimo - 1;
-    // Desloca elementos maiores que x para a direita
-    while (i >= 0 && Lista->Item[i].cod > x.cod)
-    { // Assumindo ordenação por 'cod'
-        Lista->Item[i + 1] = Lista->Item[i];
-        i--;
-    }
-
-    Lista->Item[i + 1] = x;
-    Lista->Ultimo++;
-}
-
-void Imprime(TipoLista Lista)
-{
-    if (Vazia(Lista))
-    {
-        printf("\nA lista está vazia!\n");
-        return;
-    }
-
-    int aux;
-    for (aux = Lista.Primeiro - 1; aux <= (Lista.Ultimo - 2); aux++)
-    {
-        printf("Código: %d\nIdade: %d\n\n", Lista.Item[aux].cod, Lista.Item[aux].idade);
-    }
-}
-
-void Retira(Apontador pos, TipoLista *Lista, TipoItem *x)
-{
-    int Aux;
-
-    if (Vazia(*Lista) || pos < Lista->Primeiro || pos >= Lista->Ultimo)
-    {
-        printf("ERRO: Posição inválida!\n");
-    }
-    else
-    {
-        *x = Lista->Item[pos - 1];
-        printf("O elemento retirado foi o de código %d\n", x->cod);
-
-        for (Aux = pos; Aux < Lista->Ultimo - 1; Aux++)
-        {
-            Lista->Item[Aux - 1] = Lista->Item[Aux];
-        }
-
-        Lista->Ultimo = Lista->Ultimo - 1;
-    }
-}
-
-void RetiraPos(Apontador pos, TipoLista *Lista, TipoItem *x)
-{
-    int Aux;
-
-    if (Vazia(*Lista) || pos < Lista->Primeiro - 1 || pos > Lista->Ultimo - 2)
-    {
-        printf("ERRO: Posição inválida!\n");
-    }
-    else
-    {
-        *x = Lista->Item[pos];
-        printf("O elemento retirado foi o de código %d\n", x->cod);
-
-        for (Aux = pos; Aux < Lista->Ultimo - 2; Aux++)
-        {
-            Lista->Item[Aux] = Lista->Item[Aux + 1];
-        }
-
-        Lista->Ultimo = Lista->Ultimo - 1;
-    }
-}
-
-void Procura(TipoItem x, TipoLista Lista)
-{
-    int i, encontrou = 0;
-
-    for (i = Lista.Primeiro - 1; i <= Lista.Ultimo - 2; i++)
-    {
-        if (Lista.Item[i].cod == x.cod)
-        {
-            encontrou = 1;
-            printf("Código encontrado na posição: %d\n", i + 1);
-            break;
-        }
-    }
-
-    if (!encontrou)
-    {
-        printf("Código não encontrado!\n");
-    }
-}
-
-//---------------------------------------------
-// PROGRAMA PRINCIPAL
-//---------------------------------------------
 
 int main()
 {
-    int opcao, resposta;
-    setlocale(LC_ALL, "");
-
-    FLVazia(&Lista);
-
-    do
+    TipoLista lista;
+    FFVazia(&lista);
+    int numero;
+    for (int i = 0; i < MAXTAM; i++)
     {
-        printf("\n\n====== MENU ======\n");
-        printf("0 - Sair\n");
-        printf("1 - Esvaziar lista\n");
-        printf("2 - Verificar se a lista está vazia\n");
-        printf("3 - Inserir elemento na lista\n");
-        printf("4 - Imprimir os elementos da lista\n");
-        printf("5 - Retirar elemento (antes da posição determinada)\n");
-        printf("6 - Retirar elemento (na posição)\n");
-        printf("7 - Pesquisar elemento na lista\n");
-        printf("==================\n");
-        printf("Digite a opção desejada: ");
-        scanf("%d", &opcao);
+        printf("\nDigite o %d numero:", i + 1);
+        scanf("%d", &numero);
+        ListaOrdenada(&lista, numero);
+    }
 
-        switch (opcao)
-        {
-        case 0:
-            printf("PROGRAMA ENCERRADO!\n");
-            break;
-
-        case 1:
-            FLVazia(&Lista);
-            printf("\nA lista foi esvaziada.\n");
-            break;
-
-        case 2:
-            resposta = Vazia(Lista);
-            if (resposta == 1)
-                printf("\nA lista está vazia.\n");
-            else
-                printf("\nA lista NÃO está vazia.\n");
-            break;
-
-        case 3:
-            printf("Digite o código: ");
-            scanf("%d", &x.cod);
-            printf("Digite a idade: ");
-            scanf("%d", &x.idade);
-            Insere(x, &Lista);
-            break;
-
-        case 4:
-            Imprime(Lista);
-            break;
-
-        case 5:
-            printf("Digite a posição: ");
-            scanf("%d", &pos);
-            Retira(pos, &Lista, &x);
-            break;
-
-        case 6:
-            printf("Digite a posição: ");
-            scanf("%d", &pos);
-            RetiraPos(pos, &Lista, &x);
-            break;
-
-        case 7:
-            printf("Digite o código a pesquisar: ");
-            scanf("%d", &x.cod);
-            Procura(x, Lista);
-            break;
-
-        default:
-            printf("\nOpção inválida!\n");
-        }
-
-        printf("\nPressione qualquer tecla para continuar...");
-        system("pause");
-        system("cls");
-
-    } while (opcao != 0);
-
+    printf("Lista ordenada\n");
+    for (int i = 0;i < lista.qtd; i++) // percorre a lista para imprimir
+    {
+        printf("%d", lista.num[i]);
+    }
     return 0;
 }

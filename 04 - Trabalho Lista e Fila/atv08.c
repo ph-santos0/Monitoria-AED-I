@@ -1,91 +1,108 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define MaxTam 20
+#define MAXTAM 20
+
+// 8. Crie um programa que simule uma fila de atendimento:
+
+// Cada pessoa tem um número
+//	A fila suporta até 20 pessoas
 
 typedef struct
 {
-    int numero;
-} TipoItem;
+    int cod[MAXTAM];
+    int inicio;
+    int final;
+    int qtd;
+} Tipofila;
 
-typedef struct
+void FFVazia(Tipofila *F)
 {
-    TipoItem Item[MaxTam];
-    int Frente, Tras;
-    int Tamanho;
-} TipoFila;
-
-void FFVazia(TipoFila *Fila)
-{
-    Fila->Frente = 1;
-    Fila->Tras = 1;
-    Fila->Tamanho = 0;
+    F->inicio = 0;
+    F->final = F->inicio;
+    F->qtd = 0;
 }
 
-void Enfileira(TipoItem x, TipoFila *Fila)
+// adicionar cliente
+
+void enfileirar(Tipofila *F)
 {
-    if (Fila->Tamanho == MaxTam)
+    if (F->qtd == MAXTAM)
     {
-        printf("Fila cheia\n");
+        printf("Fila cheia!\n");
+    }
+    int cod;
+
+    printf("Digite o codigo do cliente (-1 para parar):");
+    scanf("%d", &cod);
+
+    while (cod != -1 && F->qtd < MAXTAM)
+    {
+        F->cod[F->final] = cod;
+        F->final = (F->final + 1) % MAXTAM;
+        F->qtd++;
+
+        printf("Digite o numero do cliente (-1 para parar): ");
+        scanf("%d", &cod);
+    }
+}
+
+// atender cliente
+
+void atendercliente(Tipofila *F)
+{
+    if(F->qtd==0)
+    {
+        printf("Fila vazia!");
         return;
     }
-    Fila->Item[Fila->Tras - 1] = x;
-    Fila->Tras = (Fila->Tras % MaxTam) + 1;
-    Fila->Tamanho++;
-    printf("Cliente %d entrou na fila\n", x.numero);
+
+    printf("Cliente atendido: %d",F->cod[F->inicio]);
+    F->inicio=(F->inicio+1) % MAXTAM;
+    F->qtd--;
 }
 
-void Atender(TipoFila *Fila)
+void proximo(Tipofila *F)
 {
-    if (Fila->Tamanho == 0)
-    {
-        printf("Ninguem na fila\n");
+    if(F->qtd==0){
+        printf("Fila vazia!");
         return;
-    }
-    TipoItem x = Fila->Item[Fila->Frente - 1];
-    Fila->Frente = (Fila->Frente % MaxTam) + 1;
-    Fila->Tamanho--;
-    printf("Atendendo cliente %d\n", x.numero);
-}
-
-void Proximo(TipoFila Fila)
-{
-    if (Fila.Tamanho == 0)
-    {
-        printf("Ninguem na fila\n");
     }
     else
     {
-        printf("Proximo a ser atendido: %d\n", Fila.Item[Fila.Frente - 1].numero);
+    printf("Proximo cliente a ser atendido: %d",F->cod[F->inicio]);
     }
 }
 
 int main()
 {
-    TipoFila fila;
-    TipoItem cliente;
-    int op;
+    Tipofila fila;
     FFVazia(&fila);
-
+    int op;
     do
     {
-        printf("\n1-Novo Cliente 2-Atender 3-Ver Proximo 0-Sair: ");
-        scanf("%d", &op);
+        printf("\nFila de atendimento\n");
+        printf("1-Adicionar cliente\n");
+        printf("2-Atender cliente\n");
+        printf("3-Mostrar proximo cliente\n");
+        printf("4-Encerrar atendimento\n");
+        scanf("%d",&op);
+
         switch (op)
         {
         case 1:
-            printf("Numero do cliente: ");
-            scanf("%d", &cliente.numero);
-            Enfileira(cliente, &fila);
+            enfileirar(&fila);
             break;
         case 2:
-            Atender(&fila);
+            atendercliente(&fila);
             break;
         case 3:
-            Proximo(fila);
+        proximo(&fila);
+        break;
+        case 4:
+            printf("Atendimento finalizado!");
             break;
         }
-    } while (op != 0);
-
+    } while (op != 4);
     return 0;
 }

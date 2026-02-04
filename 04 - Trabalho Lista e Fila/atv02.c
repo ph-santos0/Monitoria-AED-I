@@ -1,143 +1,130 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <locale.h>
+// 2. Faça um programa que leia um número indeterminado de valores inteiros, correspondentes a notas, encerrando a entrada de dados quando for informado um valor igual a -1 (que não deve ser armazenado). Após esta entrada de dados, faça:
 
-#define InicioArranjo 1
-#define MaxTam 100
-
-typedef int Apontador;
-
+#define MAXTAM 100
 typedef struct
 {
-    int nota;
-} TipoItem;
-
-typedef struct
-{
-    TipoItem Item[MaxTam];
-    Apontador Primeiro;
-    Apontador Ultimo;
+    int notas[MAXTAM];
+    int qtd;
 } TipoLista;
 
-void FLVazia(TipoLista *Lista)
+void FFvazia(TipoLista *L)
 {
-    Lista->Primeiro = InicioArranjo;
-    Lista->Ultimo = Lista->Primeiro;
+    L->qtd = 0;
 }
 
-int Vazia(TipoLista *Lista)
+void inserirvalores(TipoLista *L)
 {
-    return (Lista->Primeiro == Lista->Ultimo);
+    int notas = 0;
+
+    // necessario ter dois prints e scan pedindo a mesma coisa pois para iniciar e continuar o while enquando a condição for verdaira!
+
+    printf("Digite as notas: (caso queira encerrar digite -1)");
+    scanf("%d", &notas);
+    while (notas != -1 && L->qtd < MAXTAM) // encerrando a entrada de dados quando for informado um valor igual a -1 (que não deve ser armazenado) e o L->qtd<MAXTAM) é para continuar caso a qtd seja menor que o valor maximo
+    {
+        L->notas[L->qtd] = notas; // notas na posição da quantidade recebe os valores digitados
+        L->qtd++;
+
+        printf("Digite as notas: (caso queira encerrar digite -1)");
+        scanf("%d", &notas);
+    }
 }
 
-void Insere(TipoItem x, TipoLista *Lista)
+void mostrarvalores(TipoLista *L)
 {
-    if (Lista->Ultimo - 1 >= MaxTam)
+    for (int i = 0; i < L->qtd; i++)
     {
-        printf("\nERRO: A lista esta cheia! (Tamanho Maximo: %d)\n", MaxTam);
+        printf("%d ", L->notas[i]);
     }
-    else
+}
+
+void ordeminversa(TipoLista *L)
+{
+    for (int i = L->qtd - 1; i >= 0; i--) // o -1 dps da qtd é por conta do indice que inicia no zero!
     {
-        Lista->Item[Lista->Ultimo - 1] = x;
-        Lista->Ultimo = Lista->Ultimo + 1;
+        printf("%d\n ", L->notas[i]);
     }
+}
+
+int soma(TipoLista *L)
+{
+    int soma = 0;
+    for (int i = 0; i < L->qtd; i++)
+    {
+        soma = soma + L->notas[i]; // nao esquece de colocar a posição pq é um vetor!
+    }
+    return soma;
+}
+
+float media(TipoLista *L, int S)
+{
+    float media = 0;
+    media = (float)S / L->qtd;
+    return media;
+}
+
+int valoresacimadamedia(TipoLista *L, float media)
+{
+    int acimamedia = 0;
+    for (int i = 0; i < L->qtd; i++)
+    {
+        if (L->notas[i] > media)
+        {
+            acimamedia++;
+        }
+    }
+    return acimamedia;
+}
+int abaixosete(TipoLista *L)
+{
+    int abaixosete = 0;
+    for (int i = 0; i < L->qtd; i++)
+    {
+        if (L->notas[i] < 7)
+        {
+            abaixosete++;
+        }
+    }
+    return abaixosete;
 }
 
 int main()
 {
-    setlocale(LC_ALL, "Portuguese");
+    TipoLista lista;
+    FFvazia(&lista);
+    inserirvalores(&lista);
+    // a.	Mostre a quantidade de valores que foram lidos;
 
-    TipoLista listaDeNotas;
-    TipoItem itemAtual;
-    int notaInput;
-    int i;
+    printf("Quantidade de valores que foram lidos: %d", lista.qtd);
 
-    int quantidade = 0;
-    int soma = 0;
-    double media = 0.0;
-    int acimaDaMedia = 0;
-    int abaixoDeSete = 0;
+    // b.	Exiba todos os valores na ordem em que foram informados, um ao lado do outro;
+    printf("\nValores:");
+    mostrarvalores(&lista);
 
-    FLVazia(&listaDeNotas);
+    // c.	Exiba todos os valores na ordem inversa à que foram informados, um abaixo do outro;
+    printf("\nValores na ordem inversa:\n");
+    ordeminversa(&lista);
 
-    printf("--- Entrada de Notas ---\n");
-    printf("Digite as notas (limite de %d). Digite -1 para parar.\n\n", MaxTam);
+    // d.	Calcule e mostre a soma dos valores;
+    printf("Soma:");
+    int Soma = soma(&lista); // tomar cuidado usando nome repetido pq o C é case sensitive
+    printf("%d\n", Soma);
 
-    while (1)
-    {
-        printf("Digite a nota: ");
-        scanf("%d", &notaInput);
+    // e.	Calcule e mostre a média dos valores;
+    
+    float Media = media(&lista, Soma);
+    printf("Media: %f", media(&lista, Soma));
+    // f.	Calcule e mostre a quantidade de valores acima da média calculada;
 
-        if (notaInput == -1)
-        {
-            break;
-        }
+    printf("\nQuantidade de valores acima da media: %d", valoresacimadamedia(&lista, Media));
 
-        if (listaDeNotas.Ultimo - 1 >= MaxTam)
-        {
-            printf("\nA lista esta cheia! Nao e possivel adicionar mais notas.\n");
-            printf("Encerrando a leitura de dados...\n");
-            break;
-        }
+    // g.	Calcule e mostre a quantidade de valores abaixo de sete;
 
-        itemAtual.nota = notaInput;
-        Insere(itemAtual, &listaDeNotas);
-    }
+    printf("\nQuantidade de valores abaixo de sete: %d ", abaixosete(&lista));
 
-    printf("\n--- Processamento dos Dados ---\n");
-
-    if (Vazia(&listaDeNotas))
-    {
-        printf("Nenhum valor foi lido.\n");
-        printf("\n8. Programa encerrado.\n");
-        return 0;
-    }
-
-    quantidade = listaDeNotas.Ultimo - listaDeNotas.Primeiro;
-    printf("\n1. Quantidade de valores lidos: %d\n", quantidade);
-
-    printf("2. Valores na ordem informada: ");
-    for (i = listaDeNotas.Primeiro - 1; i < listaDeNotas.Ultimo - 1; i++)
-    {
-        printf("%d ", listaDeNotas.Item[i].nota);
-    }
-    printf("\n");
-
-    printf("3. Valores na ordem inversa:\n");
-    for (i = listaDeNotas.Ultimo - 2; i >= listaDeNotas.Primeiro - 1; i--)
-    {
-        printf("%d\n", listaDeNotas.Item[i].nota);
-    }
-
-    for (i = listaDeNotas.Primeiro - 1; i < listaDeNotas.Ultimo - 1; i++)
-    {
-        soma += listaDeNotas.Item[i].nota;
-    }
-
-    if (quantidade > 0)
-    {
-        media = (double)soma / quantidade;
-    }
-
-    printf("\n4. Soma dos valores: %d\n", soma);
-    printf("5. Media dos valores: %.2f\n", media);
-
-    for (i = listaDeNotas.Primeiro - 1; i < listaDeNotas.Ultimo - 1; i++)
-    {
-        if (listaDeNotas.Item[i].nota > media)
-        {
-            acimaDaMedia++;
-        }
-        if (listaDeNotas.Item[i].nota < 7)
-        {
-            abaixoDeSete++;
-        }
-    }
-
-    printf("6. Quantidade de valores acima da media: %d\n", acimaDaMedia);
-    printf("7. Quantidade de valores abaixo de sete: %d\n", abaixoDeSete);
-
-    printf("\n8. Programa encerrado. Obrigado!\n");
+    printf("\nPrograma encerrado!");
 
     return 0;
 }

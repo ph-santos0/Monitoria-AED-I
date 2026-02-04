@@ -1,116 +1,155 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define InicioArranjo 1
-#define MaxTam 50
+// 4. Crie um programa que gerencie uma lista de notas de alunos:
 
-typedef int Apontador;
-
-typedef struct
-{
-    float nota;
-} TipoItem;
+#define MAXTAM 10
 
 typedef struct
 {
-    TipoItem Item[MaxTam];
-    Apontador Primeiro;
-    Apontador Ultimo;
+    float notas[MAXTAM];
+    int qtd;
 } TipoLista;
 
-void FLVazia(TipoLista *Lista)
+void FFVazia(TipoLista *L)
 {
-    Lista->Primeiro = InicioArranjo;
-    Lista->Ultimo = Lista->Primeiro;
+    L->qtd = 0;
 }
+// •	Inserir nota
 
-int Vazia(TipoLista Lista)
+void inserirnotas(TipoLista *L)
 {
-    return (Lista.Primeiro == Lista.Ultimo);
-}
-
-void Insere(TipoItem x, TipoLista *Lista)
-{
-    if (Lista->Ultimo - 1 >= MaxTam)
+    float notas = 0;
+    printf("Digite as notas: (caso queira encerrar digite -1)");
+    scanf("%f", &notas);
+    while (notas != -1 && L->qtd < MAXTAM)
     {
-        printf("Lista cheia\n");
-    }
-    else
-    {
-        Lista->Item[Lista->Ultimo - 1] = x;
-        Lista->Ultimo++;
+        L->notas[L->qtd] = notas;
+        L->qtd++;
+        printf("Digite as notas: (caso queira encerrar digite -1)");
+        scanf("%f", &notas);
     }
 }
 
-void Retira(Apontador p, TipoLista *Lista)
+// •	Remover nota
+
+int removernota(TipoLista *L, float valor)
 {
-    int i;
-    if (Vazia(*Lista) || p < 0 || p >= Lista->Ultimo - 1)
+    for (int i = 0; i < L->qtd; i++)
     {
-        printf("Erro na remocao\n");
+        if (L->notas[i] == valor)
+        {                                        // se notas na posição i for igual a valor
+            for (int j = i; j < L->qtd - 1; j++) // o último elemento não tem ninguém à direita para copiar por isso a quantidade -1
+            {
+                L->notas[j] = L->notas[j + 1]; // como estamos removendo um valor, nao pode ficar um buraco, entao temos q andar com os valores
+            }
+            L->qtd--;
+            return 1;
+        }
+    }
+    return 0;
+}
+
+// •	Calcular média
+
+float calcularmedia(TipoLista *L)
+{
+    float soma = 0;
+    float media = 0;
+
+    if (L->qtd == 0) // conferir lista vazia antes de fzr a media
+    {
+        printf("\nLista vazia!");
+        return 0;
+    }else
+    {
+        for (int i = 0; i < L->qtd; i++)
+        {
+            soma = soma + L->notas[i];
+        }
+        media = soma / L->qtd;
+        return media;
+    }
+    
+}
+
+// •	Mostrar maior e menor nota
+
+void maioremenor(TipoLista *L)
+{
+    if (L->qtd == 0)
+    {
+        printf("\nLista vazia!");
         return;
     }
-    for (i = p; i < Lista->Ultimo - 2; i++)
-    {
-        Lista->Item[i] = Lista->Item[i + 1];
-    }
-    Lista->Ultimo--;
-}
 
-void CalcularEstatisticas(TipoLista Lista)
-{
-    if (Vazia(Lista))
+    float maior = L->notas[0];       // colocar primeira nota como maior
+    float menor = L->notas[0];       // colocar primeira nota como menor
+    for (int i = 1; i < L->qtd; i++) // começa em 1 pq ja estamos comparando ao primeiro indice que inicia em zero
     {
-        printf("Lista vazia\n");
-        return;
+        if (maior < L->notas[i])
+        {
+            maior = L->notas[i];
+        }
+        if (menor > L->notas[i])
+        {
+            menor = L->notas[i];
+        }
     }
-    float soma = 0, maior = Lista.Item[0].nota, menor = Lista.Item[0].nota;
-    int i;
-
-    for (i = 0; i < Lista.Ultimo - 1; i++)
-    {
-        float val = Lista.Item[i].nota;
-        soma += val;
-        if (val > maior)
-            maior = val;
-        if (val < menor)
-            menor = val;
-    }
-
-    printf("Media: %.2f\n", soma / (Lista.Ultimo - 1));
-    printf("Maior: %.2f\n", maior);
-    printf("Menor: %.2f\n", menor);
+    printf("\nMaior nota: %f", maior);
+    printf("\nMenor nota: %f", menor);
 }
 
 int main()
 {
     TipoLista lista;
-    TipoItem item;
-    int op, pos;
-
-    FLVazia(&lista);
-
+    FFVazia(&lista);
+    int op;
+    float valor;
     do
     {
-        printf("\n1-Inserir 2-Remover (pos) 3-Estatisticas 0-Sair: ");
+        printf("\nGerenciador da lista de alunos");
+        printf("\n1. Inserir nota");
+        printf("\n2. Remover nota");
+        printf("\n3. Calcular media");
+        printf("\n4. Mostrar maior e menor nota");
+        printf("\n0. Para sair");
         scanf("%d", &op);
+
         switch (op)
         {
         case 1:
-            printf("Nota: ");
-            scanf("%f", &item.nota);
-            Insere(item, &lista);
+            inserirnotas(&lista);
             break;
+
         case 2:
-            printf("Posicao (0 a %d): ", lista.Ultimo - 2);
-            scanf("%d", &pos);
-            Retira(pos, &lista);
+
+            printf("\nDigite a nota que deseja remover:");
+            scanf("%f", &valor);
+            if (removernota(&lista, valor))
+            {
+                printf("\nNota removida com sucesso");
+            }
+            else
+            {
+                printf("\nNota nao encontrada ou lista vazia!");
+            }
             break;
+
         case 3:
-            CalcularEstatisticas(lista);
+
+            printf("Media:%f", calcularmedia(&lista));
+            break;
+
+        case 4:
+
+            maioremenor(&lista);
+            break;
+
+        case 0:
+            printf("\nPrograma encerrado!");
             break;
         }
-    } while (op != 0);
 
-    return 0;
+    } while (op != 0);
 }
