@@ -140,6 +140,7 @@ void OrdenaPilha(TipoPilha *Pilha) // Questão 4
     TipoItem aux;
     int i, j;
 
+    // Usei o método de ordenação Bubble Sort (Vocês vão aprender em AED 2)
     for (i = 0; i < Pilha->Topo - 1; i++)
     {
         for (j = 0; j < Pilha->Topo - 1 - i; j++)

@@ -83,5 +83,6 @@ int main()
 
     ImprimeTopoFundo(PilhaPar, "PAR");
     ImprimeTopoFundo(PilhaImpar, "IMPAR");
+    
     return 0;
 }
